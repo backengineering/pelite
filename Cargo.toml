@@ -34,6 +34,9 @@ maintenance = { status = "actively-developed" }
 lto = true
 opt-level = 2
 
+[profile.dev]
+debug-assertions = false
+
 [package.metadata.docs.rs]
 all-features = true
 default-target = "x86_64-pc-windows-msvc"
