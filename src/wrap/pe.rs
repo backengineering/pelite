@@ -153,7 +153,7 @@ impl<'a, Pe32: pe32::Pe<'a>, Pe64: pe64::Pe<'a>> Wrap<Pe32, Pe64> {
 		}
 	}
 	#[inline]
-	pub fn derva_slice_f<T: Pod, F: FnMut(&'a T) -> bool>(&self, rva: u32, f: F) -> Result<&'a [T]> {
+	pub fn derva_slice_f<T: Pod, F: FnMut(&T) -> bool>(&self, rva: u32, f: F) -> Result<&'a [T]> {
 		match self {
 			Wrap::T32(pe32) => pe32.derva_slice_f(rva, f),
 			Wrap::T64(pe64) => pe64.derva_slice_f(rva, f),

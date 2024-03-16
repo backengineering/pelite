@@ -340,7 +340,7 @@ pub unsafe trait Pe<'a>: PeObject<'a> + Copy {
 	/// The length of the array is the index when the callable `f` returns `true`.
 	///
 	/// The returned slice contains all `T` up to but not including the element for which the callable returned `true`.
-	fn derva_slice_f<T: Pod, F: FnMut(&'a T) -> bool>(self, rva: Rva, mut f: F) -> Result<&'a [T]> {
+	fn derva_slice_f<T: Pod, F: FnMut(&T) -> bool>(self, rva: Rva, mut f: F) -> Result<&'a [T]> {
 		let align = if cfg!(feature = "unsafe_alignment") { 1 } else { mem::align_of::<T>() };
 		let bytes = self.slice(rva, 0, align)?;
 		let mut len = 0;
@@ -353,8 +353,9 @@ pub unsafe trait Pe<'a>: PeObject<'a> + Copy {
 			}
 			// Safe because len is checked above and T is Pod
 			unsafe {
-				let s = bytes.as_ptr().offset(offset as isize) as *const T;
-				if f(&*s) {
+				let s = bytes.as_ptr().add(offset) as *const T;
+				let value = ptr::read_unaligned(s);
+				if f(&value) {
 					let p = slice::from_raw_parts(bytes.as_ptr() as *const T, len);
 					return Ok(p);
 				}
